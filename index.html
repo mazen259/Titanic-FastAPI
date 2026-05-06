@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Titanic Predictor</title>
+
+<style>
+body{
+margin:0;
+padding:0;
+font-family:Arial, sans-serif;
+background:linear-gradient(135deg,#0f172a,#1e293b);
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+}
+
+.card{
+background:white;
+padding:30px;
+border-radius:20px;
+width:420px;
+box-shadow:0 15px 35px rgba(0,0,0,.3);
+}
+
+h1{
+text-align:center;
+margin-bottom:20px;
+color:#0f172a;
+}
+
+input,select,button{
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:10px;
+border:1px solid #ccc;
+font-size:16px;
+box-sizing:border-box;
+}
+
+button{
+background:#0ea5e9;
+color:white;
+font-weight:bold;
+border:none;
+cursor:pointer;
+transition:0.3s;
+}
+
+button:hover{
+background:#0284c7;
+}
+
+#result{
+margin-top:15px;
+padding:15px;
+background:#f1f5f9;
+border-radius:10px;
+text-align:center;
+font-weight:bold;
+color:#0f172a;
+}
+</style>
+
+</head>
+<body>
+
+<div class="card">
+<h1>🚢 Titanic Predictor</h1>
+
+<select id="Pclass">
+<option value="1">First Class</option>
+<option value="2">Second Class</option>
+<option value="3">Third Class</option>
+</select>
+
+<select id="Sex">
+<option value="male">Male</option>
+<option value="female">Female</option>
+</select>
+
+<input id="Age" type="number" placeholder="Age">
+<input id="Fare" type="number" placeholder="Fare">
+<input id="SibSp" type="number" placeholder="Siblings / Spouse">
+<input id="Parch" type="number" placeholder="Parents / Children">
+
+<button onclick="predict()">Predict</button>
+
+<div id="result">Waiting...</div>
+</div>
+
+<script>
+async function predict(){
+
+document.getElementById("result").innerHTML="⏳ Predicting...";
+
+const data={
+Pclass:+document.getElementById("Pclass").value,
+Sex:document.getElementById("Sex").value,
+Age:+document.getElementById("Age").value,
+Fare:+document.getElementById("Fare").value,
+SibSp:+document.getElementById("SibSp").value,
+Parch:+document.getElementById("Parch").value
+};
+
+try{
+
+const res=await fetch("http://127.0.0.1:8000/predict",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
+});
+
+const json=await res.json();
+
+document.getElementById("result").innerHTML=
+"Prediction: "+json.prediction+
+"<br>Probability: "+json.survived_probability;
+
+}catch(error){
+
+document.getElementById("result").innerHTML=
+"❌ API connection failed";
+
+}
+
+}
+</script>
+
+</body>
+</html>
